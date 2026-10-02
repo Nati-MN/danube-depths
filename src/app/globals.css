@@ -1,0 +1,259 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --font-display: 'Fraunces Variable';
+  --font-sans: 'Manrope Variable';
+}
+
+html {
+  background: #01090d;
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-abyss font-sans text-foam antialiased;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: rgba(127, 214, 208, 0.3);
+}
+
+:focus-visible {
+  outline: 1px solid #7fd6d0;
+  outline-offset: 5px;
+}
+
+.skip-link {
+  @apply fixed left-4 top-4 z-[60] -translate-y-20 bg-abyss px-4 py-2 text-sm text-foam;
+}
+.skip-link:focus {
+  @apply translate-y-0;
+}
+
+/* ---------- Umgebung ---------- */
+
+/* dunkelt die Umgebung ab, sobald ein Fisch im Fokus steht */
+.env-dim {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background: #01090d;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.9s ease;
+}
+body[data-focus='1'] .env-dim {
+  opacity: 0.5;
+}
+
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(120% 95% at 50% 40%, transparent 52%, rgba(1, 9, 13, 0.6) 100%);
+}
+
+/* ---------- Fische ---------- */
+
+.fish-btn {
+  transition: opacity 0.8s ease, filter 0.8s ease;
+  filter: saturate(0.82) drop-shadow(0 18px 26px rgba(1, 9, 13, 0.4));
+  -webkit-tap-highlight-color: transparent;
+}
+.fish-btn[data-active='true'] {
+  filter: saturate(1) drop-shadow(0 18px 30px rgba(1, 9, 13, 0.5));
+}
+body[data-focus='1'] .fish-btn:not([data-active='true']) {
+  opacity: 0.25;
+}
+.fish-btn:focus-visible {
+  outline-offset: 10px;
+}
+
+/* Wendemanöver: der Fisch dreht sich über die Hochachse */
+.fish-flip {
+  transition: transform 1.2s cubic-bezier(0.5, 0, 0.2, 1);
+}
+
+.fish-tail {
+  transform-origin: 0 0;
+  animation: tail 2.4s ease-in-out infinite alternate;
+}
+@keyframes tail {
+  from { transform: skewY(-7deg); }
+  to { transform: skewY(7deg); }
+}
+
+.fish-drift {
+  animation: drift 9s ease-in-out infinite alternate;
+}
+@keyframes drift {
+  from { transform: translate3d(0, -1.2%, 0) rotate(-0.6deg); }
+  to { transform: translate3d(0, 1.2%, 0) rotate(0.6deg); }
+}
+
+/* ---------- Typografische Details ---------- */
+
+.link-line {
+  position: relative;
+  padding-bottom: 6px;
+}
+.link-line::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 1px;
+  background: #7fd6d0;
+  transform-origin: left;
+  transform: scaleX(0.35);
+  transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.link-line:hover::after,
+.link-line:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.hero-in {
+  opacity: 0;
+  animation: heroIn 2s cubic-bezier(0.16, 0.7, 0.2, 1) forwards;
+}
+@keyframes heroIn {
+  from { opacity: 0; transform: translate3d(0, 28px, 0); filter: blur(8px); }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+
+.rise-in {
+  animation: riseIn 0.9s cubic-bezier(0.16, 0.7, 0.2, 1);
+}
+@keyframes riseIn {
+  from { opacity: 0; transform: translate3d(0, 16px, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+.sink {
+  transform-origin: top;
+  animation: sink 2.6s ease-in-out infinite;
+}
+@keyframes sink {
+  0% { transform: scaleY(0); opacity: 0; }
+  40% { transform: scaleY(1); opacity: 1; }
+  100% { transform: translateY(14px) scaleY(1); opacity: 0; }
+}
+
+/* ---------- Immersive Artansicht ---------- */
+
+.species-view {
+  background:
+    radial-gradient(90% 60% at 70% 30%, rgba(22, 92, 104, 0.55), transparent 70%),
+    linear-gradient(#052530, #010a0f 85%);
+}
+.species-rays {
+  position: absolute;
+  inset: 0;
+  height: 100vh;
+  pointer-events: none;
+  opacity: 0.5;
+  background: repeating-linear-gradient(
+    108deg,
+    transparent 0 9%,
+    rgba(176, 232, 222, 0.07) 12%,
+    transparent 16% 27%,
+    rgba(176, 232, 222, 0.05) 31%,
+    transparent 36%
+  );
+  mask-image: linear-gradient(#000, transparent 85%);
+  -webkit-mask-image: linear-gradient(#000, transparent 85%);
+  animation: rays 14s ease-in-out infinite alternate;
+}
+@keyframes rays {
+  from { transform: translateX(-3%); opacity: 0.35; }
+  to { transform: translateX(3%); opacity: 0.6; }
+}
+
+/* ---------- Karte ---------- */
+
+.map-region {
+  fill: rgba(127, 214, 208, 0.06);
+  stroke: rgba(160, 222, 214, 0.38);
+  stroke-width: 1;
+  stroke-linejoin: round;
+  cursor: pointer;
+  transition: fill 0.6s ease, stroke 0.6s ease;
+  outline: none;
+}
+.map-region:hover {
+  fill: rgba(127, 214, 208, 0.1);
+}
+.map-region:focus-visible {
+  stroke: #e6f1ef;
+  stroke-width: 2;
+}
+.map-region.is-on {
+  fill: rgba(127, 214, 208, 0.2);
+  stroke: rgba(190, 240, 232, 0.95);
+  stroke-width: 1.5;
+}
+.map-water {
+  stroke: rgba(127, 214, 208, 0.3);
+  transition: stroke 0.8s ease;
+}
+.map-water.is-on {
+  stroke: #a8ece4;
+  stroke-dasharray: 2 7;
+  animation: flow 1.6s linear infinite;
+  filter: drop-shadow(0 0 5px rgba(127, 214, 208, 0.7));
+}
+@keyframes flow {
+  to { stroke-dashoffset: -9; }
+}
+.map-lake {
+  fill: rgba(127, 214, 208, 0.28);
+  transition: fill 0.8s ease;
+}
+.map-lake.is-on {
+  fill: #a8ece4;
+}
+.map-label {
+  fill: rgba(230, 241, 239, 0.5);
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  font-family: var(--font-sans), sans-serif;
+  transition: fill 0.6s ease;
+}
+.map-label.is-on {
+  fill: #e6f1ef;
+}
+.map-river-label {
+  fill: rgba(168, 236, 228, 0.75);
+  font-size: 15px;
+  font-style: italic;
+  font-family: var(--font-display), serif;
+}
+
+/* ---------- Weniger Bewegung ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .fish-tail,
+  .fish-drift,
+  .species-rays,
+  .sink,
+  .map-water.is-on {
+    animation: none;
+  }
+  .fish-flip {
+    transition: none;
+  }
+  .hero-in,
+  .rise-in {
+    animation-duration: 0.01s;
+    animation-delay: 0s !important;
+  }
+}
